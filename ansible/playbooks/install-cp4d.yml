@@ -12,7 +12,11 @@
     cpd_services:
       - db2wh
       - dmc
-
+      - wsl
+      - wml
+      - spark
+      - aiopenscale
+      
     # Configuration for the Db2 cluster
     db2wh_version: 11.5.5.1-cn3
     db2wh_username: db2inst1
