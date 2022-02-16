@@ -863,7 +863,7 @@
                 "Handle": {
                     "Ref": "DeployWaitConditionHandle"
                 },
-                "Timeout": 25200
+                "Timeout": 36000
             }
         }
     },
