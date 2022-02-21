@@ -94,9 +94,17 @@ export GRAPHANA_PASSWORD=password
 # MAS variables
 #export MAS_ENTITLEMENT_KEY=$SLS_ENTITLEMENT_KEY
 # CP4D variables
-#export CPD_ENTITLEMENT_KEY=$SLS_ENTITLEMENT_KEY
+export CPD_ENTITLEMENT_KEY=$SLS_ENTITLEMENT_KEY
+export CPD_VERSION=cpd40
+export MAS_CHANNEL=8.6.x
 export CPD_STORAGE_CLASS=ocs-storagecluster-cephfs
-export CPD_NAMESPACE="cpd-meta-ops-${RANDOM_STR}"
+export CPD_NAMESPACE="ibm-common-services"
+export CPD_SERVICES_NAMESPACE="cpd-services-${RANDOM_STR}"
+export DB2WH_META_STORAGE_CLASS=ocs-storagecluster-cephfs
+export DB2WH_USER_STORAGE_CLASS=ocs-storagecluster-cephfs
+export DB2WH_BACKUP_STORAGE_CLASS=ocs-storagecluster-cephfs
+export DB2WH_LOGS_STORAGE_CLASS=ocs-storagecluster-cephfs
+export DB2WH_TEMP_STORAGE_CLASS=ocs-storagecluster-cephfs
 # Manage variables
 export MAS_APP_ID=manage
 export MAS_WORKSPACE_ID="wsmasocp"
@@ -183,7 +191,7 @@ echo " BAS_CONTACT_FIRSTNAME: $BAS_CONTACT_FIRSTNAME"
 echo " BAS_CONTACT_LASTNAME: $BAS_CONTACT_LASTNAME"
 echo " GRAPHANA_PASSWORD: $GRAPHANA_PASSWORD"
 #echo " MAS_ENTITLEMENT_KEY: $MAS_ENTITLEMENT_KEY"
-#echo " CPD_ENTITLEMENT_KEY: $CPD_ENTITLEMENT_KEY"
+echo " CPD_ENTITLEMENT_KEY: $CPD_ENTITLEMENT_KEY"
 echo " CPD_STORAGE_CLASS: $CPD_STORAGE_CLASS"
 echo " MAS_APP_ID: $MAS_APP_ID"
 echo " MAS_WORKSPACE_ID: $MAS_WORKSPACE_ID"
