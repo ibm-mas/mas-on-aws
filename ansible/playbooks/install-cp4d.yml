@@ -4,7 +4,7 @@
   vars:
     cpd_registry: cp.icr.io
     cpd_registry_user: cp
-    cpd_registry_password: "{{ lookup('env', 'SLS_ENTITLEMENT_KEY') }}"
+    cpd_registry_password: "{{ lookup('env', 'CPD_ENTITLEMENT_KEY') }}"
     # cpd_version: "{{ lookup('env', 'CPD_VERSION') }}"
     # mas_channel: "{{ lookup('env', 'MAS_CHANNEL') }}"
     ## TODO : fix namespace

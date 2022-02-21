@@ -96,15 +96,18 @@ export GRAPHANA_PASSWORD=password
 # CP4D variables
 export CPD_ENTITLEMENT_KEY=$SLS_ENTITLEMENT_KEY
 export CPD_VERSION=cpd40
-export MAS_CHANNEL=8.6.x
+export MAS_CHANNEL=8.7.x
 export CPD_STORAGE_CLASS=ocs-storagecluster-cephfs
 export CPD_NAMESPACE="ibm-common-services"
 export CPD_SERVICES_NAMESPACE="cpd-services-${RANDOM_STR}"
+# DB2WH variables
 export DB2WH_META_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_USER_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_BACKUP_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_LOGS_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_TEMP_STORAGE_CLASS=ocs-storagecluster-cephfs
+export DB2WH_INSTANCE_NAME=db2wh-db01
+export DB2WH_VERSION=11.5.7.0-cn1
 # Manage variables
 export MAS_APP_ID=manage
 export MAS_WORKSPACE_ID="wsmasocp"
