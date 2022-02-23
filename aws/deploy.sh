@@ -151,7 +151,7 @@ EOT
   oc extract secret/pull-secret -n openshift-config --keys=.dockerconfigjson --to=. --confirm
   export encodedEntitlementKey=$(echo cp:$SLS_ENTITLEMENT_KEY | base64 -w0)
   export emailAddress=$(cat .dockerconfigjson | jq -r '.auths["cloud.openshift.com"].email')
-  jq '.auths |= . + {"cp.icr.io/": { "auth" : "$encodedEntitlementKey", "email" : "$emailAddress"}}' .dockerconfigjson > /tmp/dockerconfig.json
+  jq '.auths |= . + {"cp.icr.io": { "auth" : "$encodedEntitlementKey", "email" : "$emailAddress"}}' .dockerconfigjson > /tmp/dockerconfig.json
   envsubst < /tmp/dockerconfig.json > /tmp/.dockerconfigjson
   oc set data secret/pull-secret -n openshift-config --from-file=/tmp/.dockerconfigjson
 
