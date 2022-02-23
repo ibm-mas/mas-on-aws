@@ -85,7 +85,7 @@
 #   set_fact:
 #     sbo_channel: "{{ 'stable' if (mas_channel not in mas_channels_old_releases) else 'preview' }}"
 
-## directlly installing mas8.7 version
+## directlly installing SBO from stable channel for mas8.7 version
 - include_tasks: "tasks/sbo/stable.yml"
 
 # 4. Install Service Binding Operator
