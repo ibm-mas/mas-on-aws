@@ -22,7 +22,7 @@
       - dmc
 
     # Configuration for the Db2 cluster
-    db2wh_version: 11.5.7.0-cn2
+    db2wh_version: 11.5.7.0-cn1
     db2wh_username: db2inst1
     db2wh_jdbc_username: db2inst1
     db2wh_instance_id: db2wh-db01

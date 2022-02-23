@@ -107,7 +107,7 @@ export DB2WH_BACKUP_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_LOGS_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_TEMP_STORAGE_CLASS=ocs-storagecluster-cephfs
 export DB2WH_INSTANCE_NAME=db2wh-db01
-export DB2WH_VERSION=11.5.7.0-cn2
+export DB2WH_VERSION=11.5.7.0-cn1
 # Manage variables
 export MAS_APP_ID=manage
 export MAS_WORKSPACE_ID="wsmasocp"

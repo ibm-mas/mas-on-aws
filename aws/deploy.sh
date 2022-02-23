@@ -255,11 +255,11 @@ else
 fi
 
 # Deploy CP4D
-log "==== CP4D deployment started ===="
 if [[ $DEPLOY_CP4D == "true" ]]; then
+  log "==== CP4D deployment started ===="
   ansible-playbook install-cp4d.yml
+  log "==== CP4D deployment completed ===="
 fi
-log "==== CP4D deployment completed ===="
 
 ## Deploy MAS
 log "==== MAS deployment started ===="
