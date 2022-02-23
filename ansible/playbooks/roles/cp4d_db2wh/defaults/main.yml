@@ -29,7 +29,7 @@ db2wh_user_storage_size_gb: "{{ lookup('env', 'DB2WH_USER_STORAGE_SIZE_GB') | de
 
 # Configure CP4D backup storage (CP4D v3.5 and v4.0)
 db2wh_backup_storage_class: "{{ lookup('env', 'DB2WH_BACKUP_STORAGE_CLASS') }}"
-db2wh_backup_storage_size_gb: "{{ lookup('env', 'DB2WH_BACKUP_STORAGE_SIZE_GB') | default('100Gi, true) }}"
+db2wh_backup_storage_size_gb: "{{ lookup('env', 'DB2WH_BACKUP_STORAGE_SIZE_GB') | default('100Gi', true) }}"
 
 # Configure CP4D transaction logs storage (CP4D v4.0 only)
 db2wh_logs_storage_class: "{{ lookup('env', 'DB2WH_LOGS_STORAGE_CLASS') }}"
