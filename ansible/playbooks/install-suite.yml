@@ -13,7 +13,7 @@
     # -----------------------------------------------------------------------------------------------------------------
 
     # Which MAS channel to subscribe to
-    mas_channel: "{{ lookup('env', 'MAS_CHANNEL') | default('8.6.x', true) }}"
+    mas_channel: "{{ lookup('env', 'MAS_CHANNEL') | default('8.7.x', true) }}"
 
     # MAS configuration
     custom_domain: "{{ lookup('env', 'MAS_DOMAIN') | default(None)}}"
