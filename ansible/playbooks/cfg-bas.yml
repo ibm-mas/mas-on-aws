@@ -7,7 +7,7 @@
     mas_config_dir: "{{ lookup('env', 'MAS_CONFIG_DIR') }}"
 
     # BAS Configuration
-    bas_tls_crt: "{{ lookup('file', '~/mas-multicloud/bas.crt') }}"
+    bas_tls_crt: "{{ lookup('file', '~/mas-on-aws/bas.crt') }}"
     bas_endpoint_url: "{{ lookup('env', 'BAS_ENDPOINT_URL') }}"
     bas_api_key: "{{ lookup('env', 'BAS_API_KEY') }}"
     # bas_segment_key: "{{ lookup('env', 'BAS_SEGMENT_KEY') }}"

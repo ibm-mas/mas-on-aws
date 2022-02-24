@@ -13,7 +13,7 @@ retrieve_mas_ca_cert() {
   found="false"
   counter=0
   while [[ $found == "false" ]] && [[ $counter < 20 ]]; do
-    oc get secret mas-${uniqstr}-cert-public-ca -n cert-manager
+    oc get secret mas-${uniqstr}-cert-public-ca -n ibm-common-services
     if [[ $? -eq 1 ]]; then
       log "OCP secret mas-${uniqstr}-cert-public-ca not found ($counter), waiting ..."
       sleep 30
@@ -23,7 +23,7 @@ retrieve_mas_ca_cert() {
       log "OCP secret mas-${uniqstr}-cert-public-ca found"
       found="true"
     fi
-    oc get secret mas-${uniqstr}-cert-public-ca -n cert-manager -o yaml | grep ca.crt | cut -d ':' -f 2 | tr -d " ,\"" | base64 -d > $filepath
+    oc get secret mas-${uniqstr}-cert-public-ca -n ibm-common-services -o yaml | grep ca.crt | cut -d ':' -f 2 | tr -d " ,\"" | base64 -d > $filepath
   done
 }
 
