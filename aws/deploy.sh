@@ -221,9 +221,9 @@ log "==== MongoDB and SBO deployment completed ===="
 cp $GIT_REPO_HOME/entitlement.lic $MAS_CONFIG_DIR
 
 ## Deploy Amqstreams
-log "==== Amq streams deployment started ===="
-ansible-playbook install-amqstream.yml  
-log "==== Amq streams deployment completed ===="
+# log "==== Amq streams deployment started ===="
+# ansible-playbook install-amqstream.yml  
+# log "==== Amq streams deployment completed ===="
 
 # SLS Deployment
 if [[ (-z $SLS_ENDPOINT_URL) || (-z $SLS_REGISTRATION_KEY) || (-z $SLS_PUB_CERT_URL) ]]
