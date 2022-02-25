@@ -49,10 +49,10 @@ if [[ (-z $CLOUD_TYPE) || (-z $DEPLOY_REGION) || (-z $ACCOUNT_ID) || (-z $CLUSTE
   PRE_VALIDATION=fail
 fi
 
-if [[ $OFFERING_TYPE == "MAS Core + CP4D" ]]; then
+if [[ $OFFERING_TYPE == "MAS Core + Cloud Pak for Data" ]]; then
   export DEPLOY_CP4D="true"
   export DEPLOY_MANAGE="false"
-elif [[ $OFFERING_TYPE == "MAS Core + Manage (no CP4D)" ]]; then
+elif [[ $OFFERING_TYPE == "MAS Core + Manage (no Cloud Pak for Data)" ]]; then
   export DEPLOY_CP4D="false"
   export DEPLOY_MANAGE="true"
 else
@@ -247,6 +247,7 @@ if [[ $PRE_VALIDATION == "pass" ]]; then
 
   # Create Red Hat pull secret
   echo "$OCP_PULL_SECRET" > $GIT_REPO_HOME/pull-secret.json
+  chmod 600 $OPENSHIFT_PULL_SECRET_FILE_PATH
 
   # Call cloud specific script
   chmod +x $CLOUD_TYPE/*.sh
