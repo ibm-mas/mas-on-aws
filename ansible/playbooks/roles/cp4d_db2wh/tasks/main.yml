@@ -1,99 +1,66 @@
 ---
-# 1. Provide debug information to the user
+- name: "Fail if db2wh_instance_name has not been provided"
+  when: db2wh_instance_name is not defined or db2wh_instance_name == ""
+  fail:
+    msg: "db2wh_instance_name property has not been set"
+
+# 1. Determine which version of CP4D we are working with
 # -----------------------------------------------------------------------------
-- name: "Debug information"
-  debug:
+# - if cpd_version is set explicitly then we use that
+# - if cpd-meta-ops namespace exists then we assume it's 3.5
+# - otherwise we assume CPD v4
+
+- name: Check for the presence of the CPDv4 services namespace
+  when: cpd_version is not defined or cpd_version == ''
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: cpd-meta-ops
+  register: cpd3_namespace_lookup
+
+- name: Set cpd_version to cpd35 if we found the CP4D v3 namespace
+  when:
+    - cpd_version is not defined or cpd_version == ''
+    - cpd3_namespace_lookup.resources is defined
+    - cpd3_namespace_lookup.resources | length == 1
+  set_fact:
+    cpd_version: cpd35
+
+- name: Default to cpd40 if we did not find the CP4D v3 namespace
+  when: cpd_version is not defined or cpd_version == ''
+  set_fact:
+    cpd_version: cpd40
+
+
+# 2. Set db2wh_version if none provided by the user
+# -----------------------------------------------------------------------------
+- name: Set db2wh_version if none provided by the user
+  when: db2wh_version is not defined or db2wh_version == ''
+  set_fact:
+    db2wh_version: "{{ default_db2wh_version[cpd_version] }}"
+
+- debug:
     msg:
-      - "Namespace .................... {{ cpd_meta_namespace }}"
-      - "Storage class ................ {{ cpd_storage_class }}"
-      - "Db2 database instanceId ...... {{ db2wh_instance_id }}"
-      - "Db2 database name ............ {{ db2wh_dbname }}"
-      - "Db2 database username ........ {{ db2wh_username }}"
-      - "Db2 version .................. {{ db2wh_version }}"
-      - "MAS Instance ID .............. {{ mas_instance_id }}"
-      - "MAS Config directory ......... {{ mas_config_dir }}"
+      - "CPD Version ........................... {{ cpd_version }}"
+      - "DB2WH Version ......................... {{ db2wh_version }}"
 
-# 2. Create a Db2 instance
+# 3. Taint and label dedicated node if specified
 # -----------------------------------------------------------------------------
-- name: "Create db2wh instance"
-  community.kubernetes.k8s:
-    apply: yes
-    definition: "{{ lookup('template', 'templates/db2ucluster.yaml') }}"
-  register: _db2_cluster_result
-
-# Wait for the cluster to be ready
-- name: "Wait for db2wh instance to be ready (5m delay)"
-  community.kubernetes.k8s_info:
-    api_version: db2u.databases.ibm.com/v1
-    name: "{{ db2wh_instance_id | lower }}"
-    namespace: "{{cpd_meta_namespace}}"
-    kind: Db2uCluster
-  register: db2_cluster_lookup
-  until:
-    - db2_cluster_lookup.resources | length == 1
-    - db2_cluster_lookup.resources[0].status.state == "Ready"
-  retries: 24 # Approximately 2 hours before we give up
-  delay: 300 # 5 minutes
-
-
-# 3. Configure a public route for Db2
-# -----------------------------------------------------------------------------
-- name: "Get cluster subdomain"
-  community.kubernetes.k8s_info:
-    api_version: config.openshift.io/v1
-    kind: Ingress
-    name: cluster
-  register: _cluster_subdomain
-
-- name: Lookup db2wh TLS certificates
-  community.kubernetes.k8s_info:
-    api_version: v1
-    kind: Secret
-    name: "internal-tls"
-    namespace: "{{cpd_meta_namespace}}"
-  register: _db2u_instance_certificates
-
-- name: Lookup db2wh Engn Service
-  community.kubernetes.k8s_info:
-    api_version: v1
-    kind: Service
-    name: "c-{{db2wh_instance_id | lower}}-db2u-engn-svc"
-    namespace: "{{cpd_meta_namespace}}"
-  register: _db2u_instance_engn_svc
-  until:
-    - _db2u_instance_engn_svc.resources[0] is defined
-  retries: 15 # approx 5 minutes before we give up
-  delay: 20
-
-- name: Set Db2wh certificates as Facts
-  set_fact:
-    # We need to use certificate.pem rather than tls.crt when we create the JdbcCfg for MAS
-    db2wh_pem: "{{ _db2u_instance_certificates.resources[0].data['certificate.pem'] | b64decode }}"
-    db2wh_tls_crt: "{{ _db2u_instance_certificates.resources[0].data['tls.crt'] | b64decode }}"
-    db2wh_tls_key: "{{ _db2u_instance_certificates.resources[0].data['tls.key'] | b64decode }}"
+- name: Taint and label dedicated worker node
   when:
-    - _db2u_instance_certificates is defined
-    - (_db2u_instance_certificates.resources | length > 0)
+    - db2wh_node_label is defined and db2wh_node_label != ''
+    - db2wh_dedicated_node is defined and db2wh_dedicated_node != ''
+  shell: |
+    oc adm taint node {{ db2wh_dedicated_node }} icp4data={{ db2wh_node_label }}:NoSchedule --overwrite
+    oc adm drain {{ db2wh_dedicated_node }} --ignore-daemonsets --delete-local-data
+    oc label node {{ db2wh_dedicated_node }} icp4data={{ db2wh_node_label }} --overwrite
+    oc adm uncordon {{ db2wh_dedicated_node }}
 
-- name: Set Db2wh TLS nodePort
-  set_fact:
-    db2wh_tls_nodeport: "{{item.nodePort}}"
-  when: "{{item.name == 'ssl-server'}}"
-  loop:
-    "{{_db2u_instance_engn_svc.resources[0].spec.ports}}"
-
-
-- name: "Create Db2 Warehouse route"
-  community.kubernetes.k8s:
-    apply: yes
-    definition: "{{ lookup('template', 'templates/tlsroute.yml') }}"
-
-
-# 3. Generate a JdbcCfg for MAS configuration
+# 4. Load var files
 # -----------------------------------------------------------------------------
-- include_tasks: tasks/suite_jdbccfg.yml
-  when:
-    - mas_instance_id is defined
-    - mas_instance_id|length > 0
-    - mas_config_dir is defined
-    - mas_config_dir|length > 0
+## not loading for now, reading from env
+# - name: Load variables
+#   include_vars: "vars/{{ cpd_version }}.yml"
+
+- name: Provision DB2 instance
+  include_tasks: "tasks/{{ cpd_version }}/provision-instance.yml"
