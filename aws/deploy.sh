@@ -96,6 +96,8 @@ accessdetails=$(aws iam create-access-key --user-name ${IAM_USER_NAME})
 export AWS_ACCESS_KEY_ID=$(echo $accessdetails | jq '.AccessKey.AccessKeyId' | tr -d "\"")
 export AWS_SECRET_ACCESS_KEY=$(echo $accessdetails | jq '.AccessKey.SecretAccessKey' | tr -d "\"")
 echo " AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+# Put some delay for IAM permissions to be applied in the backend
+sleep 60
 
 if [[ $OPENSHIFT_USER_PROVIDE == "false" ]]; then
   ## Provisiong OCP cluster
