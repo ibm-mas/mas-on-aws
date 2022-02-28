@@ -162,7 +162,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Maximo Manage database configuration (complete only for the 'MAS + Manage' offering type)"
+                        "default": "Maximo Manage database configuration (complete this section only if you chose the 'MAS + Manage' offering type)"
                     },
                     "Parameters": [
                         "MASManageDBUser",
@@ -174,7 +174,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Existing Suite License Service connection details (leave empty to create a new SLS instance)"
+                        "default": "Existing Suite License Service connection details (leave this section empty to create a new SLS instance)"
                     },
                     "Parameters": [
                         "SLSEndpointUrl",
@@ -184,7 +184,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Existing Behavior Analytics Service connection details (leave empty to create a new BAS instance)"
+                        "default": "Existing Behavior Analytics Service connection details (leave this section empty to create a new BAS instance)"
                     },
                     "Parameters": [
                         "BASEndpointUrl",
