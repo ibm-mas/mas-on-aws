@@ -200,7 +200,7 @@ else
 fi
 
 ## Configure OCP cluster
-log "==== OCP cluster configuration started ===="
+log "==== OCP cluster configuration (Cert Manager and SBO) started ===="
 cd $GIT_REPO_HOME/ansible/playbooks
 set +e
 ansible-playbook configure-ocp.yml 
@@ -221,12 +221,12 @@ if [[ $? -ne 0 ]]; then
   fi
 fi
 set -e
-log "==== OCP cluster configuration completed ===="
+log "==== OCP cluster configuration (Cert Manager and SBO) completed ===="
 
 ## Deploy MongoDB
-log "==== MongoDB and SBO deployment started ===="
+log "==== MongoDB deployment started ===="
 ansible-playbook install-mongodb.yml 
-log "==== MongoDB and SBO deployment completed ===="
+log "==== MongoDB deployment completed ===="
 
 ## Copying the entitlement.lic to MAS_CONFIG_DIR
 cp $GIT_REPO_HOME/entitlement.lic $MAS_CONFIG_DIR

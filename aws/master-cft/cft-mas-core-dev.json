@@ -103,7 +103,7 @@
             "Type": "String"
         },
         "BASAPIKey": {
-            "Description": "Enter the service's API key that you retrieved from the 'bas-api-key' secret in the BAS  namespace.",
+            "Description": "Enter the service's API key that you retrieved from the 'bas-api-key' secret in the BAS namespace.",
             "Type": "String"
         },
         "BASPublicCertificateUrl": {
@@ -124,14 +124,21 @@
                 },
                 {
                     "Label": {
-                        "default": "OpenShift cluster configuration (complete only if you want to create a new cluster)"
+                        "default": "Existing OpenShift cluster connection details (complete this section only if you want to reuse an existing cluster)"
                     },
                     "Parameters": [
-                        "PublicHostedZone",
-                        "ClusterSize",
                         "OpenShiftClusterApiUrl",
                         "OpenShiftUser",
                         "OpenShiftPassword"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "New OpenShift cluster configuration details (complete this section only if you want to create a new cluster)"
+                    },
+                    "Parameters": [
+                        "PublicHostedZone",
+                        "ClusterSize"
                     ]
                 },
                 {
