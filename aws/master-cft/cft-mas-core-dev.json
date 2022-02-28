@@ -103,7 +103,7 @@
             "Type": "String"
         },
         "BASAPIKey": {
-            "Description": "Enter the service's API key that you retrieved from the 'bas-api-key' secret in the BAS  namespace.",
+            "Description": "Enter the service's API key that you retrieved from the 'bas-api-key' secret in the BAS namespace.",
             "Type": "String"
         },
         "BASPublicCertificateUrl": {
