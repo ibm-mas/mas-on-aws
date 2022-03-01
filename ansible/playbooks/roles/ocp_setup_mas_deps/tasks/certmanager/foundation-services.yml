@@ -7,6 +7,12 @@
 # - IBM NamespaceScope Operator
 # - Operand Deployment Lifecycle Manager
 
+- name: Check if operator group is present
+  k8s_info:
+    namespace: ibm-common-services
+    kind: OperatorGroup
+  register: og_info
+
 - name: Install Cert Manager (Foundation Services version)
   community.kubernetes.k8s:
     definition: "{{ lookup('template', 'templates/foundation-services/subscription.yml') }}"
