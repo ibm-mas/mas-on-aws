@@ -143,7 +143,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Cluster and bootnode access"
+                        "default": "Cluster and bootnode access (you must complete this section)"
                     },
                     "Parameters": [
                         "SSHKey",
@@ -152,7 +152,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Keys and licenses"
+                        "default": "Keys and licenses (you must complete this section)"
                     },
                     "Parameters": [
                         "EntitledRegistryKey",
