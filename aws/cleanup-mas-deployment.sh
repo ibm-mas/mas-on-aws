@@ -2,6 +2,7 @@
 # Script to cleanup the MAS deployment on AWS.
 # It will cleanup all the below resources that get created during the deployment.
 # - EC2 instances
+# - EBS Volumes
 # - NAT gateways
 # - Elastic IPs
 # - Load balancers
@@ -508,11 +509,15 @@ echo "---------------------------------------------"
 # Delete CloudFormation stack
 if [[ -n $STACK_NAME ]]; then
   echo "Checking for CloudFormation stack"
-  stack=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION)
-  if [[ -n $stack ]]; then
-    echo "Found CloudFormation stack for this MAS instance"
-    aws cloudformation delete-stack --stack-name $STACK_NAME --region $REGION
-    echo "Deleted CloudFormation stack $STACK_NAME"
+  STACKARN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION | jq ".Stacks[].StackId" | tr -d '"')
+  echo "STACKARN = $STACKARN"
+  if [[ -n $STACKARN ]]; then
+    # Get stack ARN
+    aws cloudformation delete-stack --stack-name $STACKARN --region $REGION
+    echo "Delete initiated for CloudFormation stack $STACK_NAME"
+    # Wait for delete complete
+    aws cloudformation wait stack-delete-complete --stack-name $STACKARN --region $REGION
+    echo "Deleted stack $STACK_NAME"
   else
     echo "No CloudFormation stack for this MAS instance"
   fi
