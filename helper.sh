@@ -88,7 +88,9 @@ mark_provisioning_failed() {
   RESP_CODE=1
   export STATUS=FAILURE
   export STATUS_MSG=NA
-  if [[ $retcode -eq 11 ]]; then
+  if [[ $retcode -eq 2 ]]; then
+    export STATUS_MSG="Failed in the Ansible playbook execution."
+  elif [[ $retcode -eq 11 ]]; then
     export STATUS_MSG="This region is not supported for MAS deployment."
   elif [[ $retcode -eq 12 ]]; then
     export STATUS_MSG="The provided ER key is not valid. It does not have access to download the MAS images."
