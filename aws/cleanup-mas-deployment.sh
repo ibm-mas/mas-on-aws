@@ -26,22 +26,39 @@ set -e
 
 # Functions
 usage() {
-  echo "Usage: cleanup-mas-deployment.sh [stack-name] [unique-string] [region-code]"
+  echo "Usage: cleanup-mas-deployment.sh -s stack-name -u unique-string -r region-code"
   echo "       Provide either 'stack-name' or 'unique-string' parameter."
   echo "       If CloudFormation stack is present and it has 'ClusterUniqueString' output variable present, then provide the 'stack-name' parameter."
   echo "       If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
   echo "       If 'stack-name' is provided, 'unique-string' will be ignored."
   echo "       For example, "
-  echo "         cleanup-mas-deployment.sh 'mas-stack-1' '' 'us-east-1'"
-  echo "         cleanup-mas-deployment.sh '' 'gf5thj' 'us-east-1'"
+  echo "         cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
+  echo "         cleanup-mas-deployment.sh -u gf5thj -r us-east-1"
   exit 1
 }
 
 # Read arguments
-STACK_NAME=$1
-UNIQUE_STR=$2
-REGION=$3
-
+if [[ $# -eq 0 ]]; then
+  echo "No arguments provided with $0. Exiting.."
+  usage
+else
+  while getopts 's:u:r:?h' c; do
+    case $c in
+    s)
+      STACK_NAME=$OPTARG
+      ;;
+    u)
+      UNIQUE_STR=$OPTARG
+      ;;
+    r)
+      REGION=$OPTARG
+      ;;
+    h | *)
+      usage
+      ;;
+    esac
+  done
+fi
 echo "Stack name: $STACK_NAME"
 echo "Unique string: $UNIQUE_STR"
 echo "Region: $REGION"
@@ -106,6 +123,20 @@ else
   echo "No EC2 instances found for this MAS instance"
 fi
 echo "---------------------------------------------"
+
+## Delete volumes
+echo "Checking for volumes"
+VOLS=$(aws ec2 describe-volumes --filters Name=tag:Name,Values=masocp-${UNIQ_STR}* --region $REGION | jq ".Volumes[].VolumeId" | tr -d '"')
+echo "VOLS=$VOLS"
+if [[ -n $VOLS ]]; then
+  echo "Found volumes for this MAS instance"
+  for inst in $VOLS; do
+    aws ec2 delete-volume --volume-id $inst --region $REGION
+    echo "Deleted volume $inst"
+  done
+else
+  echo "No volumess found for this MAS instance"
+fi
 
 ## Delete NAT gateways and release EIPs
 echo "Checking for VPC"
@@ -475,14 +506,16 @@ fi
 echo "---------------------------------------------"
 
 # Delete CloudFormation stack
-echo "Checking for CloudFormation stack"
-aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION > /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
-  echo "Found CloudFormation stack for this MAS instance"
-  aws cloudformation delete-stack --stack-name $STACK_NAME --region $REGION
-  echo "Deleted CloudFormation stack $STACK_NAME"
-else
-  echo "No CloudFormation stack for this MAS instance"
+if [[ -n $STACK_NAME ]]; then
+  echo "Checking for CloudFormation stack"
+  stack=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION)
+  if [[ -n $stack ]]; then
+    echo "Found CloudFormation stack for this MAS instance"
+    aws cloudformation delete-stack --stack-name $STACK_NAME --region $REGION
+    echo "Deleted CloudFormation stack $STACK_NAME"
+  else
+    echo "No CloudFormation stack for this MAS instance"
+  fi
+  echo "---------------------------------------------"
 fi
-echo "---------------------------------------------"
 echo "==== Execution completed at `date` ===="
