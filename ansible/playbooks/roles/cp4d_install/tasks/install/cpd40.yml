@@ -88,22 +88,6 @@
     definition: "{{ lookup('template', 'templates/cpd40/operand.yaml') }}"
   register: _cpd_operand_result
 
-- name: Pause for 120 seconds for cpd operator pod restart
-  pause:
-    seconds: 120
-
-- name: "again wait for cpd-platform-operator-manager to be ready (60s delay)"
-  community.kubernetes.k8s_info:
-    api_version: apps/v1
-    name: cpd-platform-operator-manager
-    namespace: "{{ cpd_meta_namespace }}"
-    kind: Deployment
-  register: _cpd_subscription
-  until: _cpd_subscription.resources[0].status.availableReplicas is defined
-  retries: 10 # Approximately 10 minutes before we give up
-  delay: 60 # 1 minute
-    
-
 - name: "Apply CloudPak for Data 4.0 CR"
   community.kubernetes.k8s:
     apply: yes
@@ -128,7 +112,7 @@
     namespace: "{{ cpd_services_namespace }}"
     kind: Ibmcpd
   register: _ibmcpd_subscription
-  until: _ibmcpd_subscription.resources[0].status.controlPlaneStatus is defined and _ibmcpd_subscription.resources[0].status.controlPlaneStatus == "Completed"
+  until: _ibmcpd_subscription.resources[0].status is defined and _ibmcpd_subscription.resources[0].status.controlPlaneStatus is defined and _ibmcpd_subscription.resources[0].status.controlPlaneStatus == "Completed"
   retries: 90 # Approximately 10 minutes before we give up
   delay: 60 # 1 minute
 
