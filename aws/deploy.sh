@@ -239,7 +239,6 @@ cp $GIT_REPO_HOME/entitlement.lic $MAS_CONFIG_DIR
 # SLS Deployment
 if [[ (-z $SLS_ENDPOINT_URL) || (-z $SLS_REGISTRATION_KEY) || (-z $SLS_PUB_CERT_URL) ]]
 then
-    log "=== Deploying SLS Deployment ==="
     ## Deploy SLS
     log "==== SLS deployment started ===="
     ansible-playbook install-sls.yml
@@ -254,7 +253,6 @@ fi
 #BAS Deployment
 if [[ (-z $BAS_API_KEY) || (-z $BAS_ENDPOINT_URL) || (-z $BAS_PUB_CERT_URL) ]]
 then
-    log "=== Deploying BAS Deployment ==="
     ## Deploy BAS
     log "==== BAS deployment started ===="
     ansible-playbook install-bas.yml
