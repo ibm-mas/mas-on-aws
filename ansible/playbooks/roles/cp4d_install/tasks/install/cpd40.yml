@@ -88,7 +88,11 @@
     definition: "{{ lookup('template', 'templates/cpd40/operand.yaml') }}"
   register: _cpd_operand_result
 
-- name: "Again wait for cpd-platform-operator-manager to be ready (60s delay)"
+- name: Pause for 120 seconds for cpd operator pod restart
+  pause:
+    seconds: 120
+
+- name: "again wait for cpd-platform-operator-manager to be ready (60s delay)"
   community.kubernetes.k8s_info:
     api_version: apps/v1
     name: cpd-platform-operator-manager
@@ -98,6 +102,7 @@
   until: _cpd_subscription.resources[0].status.availableReplicas is defined
   retries: 10 # Approximately 10 minutes before we give up
   delay: 60 # 1 minute
+    
 
 - name: "Apply CloudPak for Data 4.0 CR"
   community.kubernetes.k8s:
