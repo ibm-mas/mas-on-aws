@@ -951,7 +951,7 @@
             "Value": "masocpuser"
         },
         "OpenShiftPassword": {
-            "Description": "Username to login to OpenShift consple",
+            "Description": "Username to login to OpenShift console",
             "Condition": "ShowOCPDetailsInOutput",
             "Value": {
                 "Fn::Join": [
