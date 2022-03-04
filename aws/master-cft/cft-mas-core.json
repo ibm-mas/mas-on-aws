@@ -6,6 +6,7 @@
             "Description": "Select your preferred Suite offering type.",
             "Type": "String",
             "Default": "MAS Core + Cloud Pak for Data",
+            "MinLength" : "1",
             "AllowedValues": [
                 "MAS Core + Cloud Pak for Data",
                 "MAS Core + Manage (no Cloud Pak for Data)"
@@ -24,6 +25,7 @@
             "Description": "Select your preferred cluster size. All master nodes (M) are m5.2xlarge Amazon EC2 instances. All worker nodes (W) are m5.4xlarge instances. Choose from: small (3M, 3W, total memory: 288GB), medium (3M, 5W, total memory: 416GB), or large (5M, 7W, total memory: 608GB).",
             "Type": "String",
             "Default": "small",
+            "MinLength" : "1",
             "AllowedValues": [
                 "small",
                 "medium",
