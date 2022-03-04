@@ -30,6 +30,7 @@ export MAS_DB_IMPORT_DEMO_DATA=${23}
 export EXS_OCP_URL=${24}
 export EXS_OCP_USER=${25}
 export EXS_OCP_PWD=${26}
+export EMAIL_NOTIFICATION=${27}
 
 # Load helper functions
 . helper.sh
@@ -171,6 +172,7 @@ echo " MAS_DB_IMPORT_DEMO_DATA: $MAS_DB_IMPORT_DEMO_DATA"
 echo " EXS_OCP_URL: $EXS_OCP_URL"
 echo " EXS_OCP_USER: $EXS_OCP_USER"
 echo " EXS_OCP_PWD: $EXS_OCP_PWD"
+echo " EMAIL_NOTIFICATION: $EMAIL_NOTIFICATION"
 
 echo " HOME: $HOME"
 echo " GIT_REPO_HOME: $GIT_REPO_HOME"
@@ -285,9 +287,13 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
   curl -k -X PUT -H 'Content-Type:' --data-binary "{\"Status\":\"SUCCESS\",\"Reason\":\"MAS deployment complete\",\"UniqueId\":\"ID-$CLOUD_TYPE-$CLUSTER_SIZE-$CLUSTER_NAME\",\"Data\":\"${STATUS}#${STATUS_MSG}\"}" "$DEPLOY_WAIT_HANDLE"
 
   # Send email notification
-  sleep 30
-  log "Sending notification"
-  ./notify.sh
+  if [[ $EMAIL_NOTIFICATION == "true" ]]; then
+    sleep 30
+    log "Buyer has explicitly opted for email notification, sending notification"
+    ./notify.sh
+  else
+    log "Buyer has not opted for email notification, not sending notification"
+  fi
 
   # Upload the log file to s3
   aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH

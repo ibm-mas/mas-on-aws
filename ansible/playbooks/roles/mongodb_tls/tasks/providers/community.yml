@@ -240,7 +240,7 @@
   file:
     path: "{{ mas_config_dir }}"
     state: directory
-    mode: "744"
+    mode: "700"
   become: false
 
 
