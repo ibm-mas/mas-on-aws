@@ -6,6 +6,7 @@
             "Description": "Select your preferred Suite offering type.",
             "Type": "String",
             "Default": "MAS Core + Cloud Pak for Data",
+            "MinLength" : "1",
             "AllowedValues": [
                 "MAS Core + Cloud Pak for Data",
                 "MAS Core + Manage (no Cloud Pak for Data)"
