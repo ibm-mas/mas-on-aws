@@ -10,7 +10,7 @@
 # - Internet gateway
 # - Subnets
 # - Routing tables
-# - Netowkr ALCs
+# - Network ACLs
 # - Security groups
 # - VPC
 # - S3 buckets
@@ -19,6 +19,7 @@
 # - IAM policies
 # - IAM roles
 # - Private hosted zone
+# - CloudWatch Log groups
 # - CloudFormation stack
 #
 
@@ -28,9 +29,16 @@ set -e
 # Functions
 usage() {
   echo "Usage: cleanup-mas-deployment.sh -s stack-name -u unique-string -r region-code"
-  echo "       Provide either 'stack-name' or 'unique-string' parameter."
-  echo "       If CloudFormation stack is present and it has 'ClusterUniqueString' output variable present, then provide the 'stack-name' parameter."
-  echo "       If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
+  echo "  Provide either 'stack-name' or 'unique-string' parameter."
+  echo " "
+  echo "  - If CloudFormation stack is present and it has 'ClusterUniqueString' key in the 'Output' tab, then"
+  echo "    provide the 'stack-name' parameter."
+  echo "  - If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
+  echo "  - If CloudFormation stack is present and it does not have 'ClusterUniqueString' output variable present,"
+  echo "    then you can get the unique string  from the 'Resources' tab. Look for the resource with 'Logical ID' named"
+  echo "    'DeploymentRoleProfile' and get the last part of the value in 'Physical ID' field."
+  echo "    For example, if value is 'masocp-deploy-instance-profile-q32c1b', then unique string will be 'q32c1b'"
+  echo "    Once unique string is obtained, use it to cleanup the instance."
   echo "       If 'stack-name' is provided, 'unique-string' will be ignored."
   echo "       For example, "
   echo "         cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
