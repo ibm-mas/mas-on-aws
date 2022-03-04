@@ -209,7 +209,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Email notification choice. (Change the value to 'true' explicitly to receive an email notification, provided you have email addresses configured in SES. Make sure email addresses are authorized as the notification contains credentials of the MAS instance)"
+                        "default": "Email notification choice. (Change the value to 'true' explicitly to receive an email notification, provided you have email addresses configured in SES. This is a concent from the buyer that authorized email addresses are defined in the SES, as the notification contains credentials of the MAS deployment)"
                     },
                     "Parameters": [
                         "EmailNotification"

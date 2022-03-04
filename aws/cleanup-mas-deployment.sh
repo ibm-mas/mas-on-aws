@@ -31,18 +31,15 @@ usage() {
   echo "Usage: cleanup-mas-deployment.sh -s stack-name -u unique-string -r region-code"
   echo "  Provide either 'stack-name' or 'unique-string' parameter."
   echo " "
-  echo "  - If CloudFormation stack is present and it has 'ClusterUniqueString' key in the 'Output' tab, then"
-  echo "    provide the 'stack-name' parameter."
+  echo "  - If CloudFormation stack is present and it has the resource with 'Logical ID' named 'DeploymentRoleProfile',"
+  echo "    you can delete the MAS instance by stack name. (Check the 'Resources' tab on CloudFormation stack)"
   echo "  - If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
-  echo "  - If CloudFormation stack is present and it does not have 'ClusterUniqueString' output variable present,"
-  echo "    then you can get the unique string  from the 'Resources' tab. Look for the resource with 'Logical ID' named"
-  echo "    'DeploymentRoleProfile' and get the last part of the value in 'Physical ID' field."
-  echo "    For example, if value is 'masocp-deploy-instance-profile-q32c1b', then unique string will be 'q32c1b'"
-  echo "    Once unique string is obtained, use it to cleanup the instance."
-  echo "       If 'stack-name' is provided, 'unique-string' will be ignored."
-  echo "       For example, "
-  echo "         cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
-  echo "         cleanup-mas-deployment.sh -u gf5thj -r us-east-1"
+  echo "    In this case, the associated CloudFormation stack won't be deleted even if it exists. It should be deleted explicitly."
+  echo " "
+  echo "  If 'stack-name' is provided, 'unique-string' will be ignored."
+  echo "  For example, "
+  echo "   cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
+  echo "   cleanup-mas-deployment.sh -u gf5thj -r us-east-1"
   exit 1
 }
 
@@ -93,15 +90,15 @@ fi
 
 if [[ -n $STACK_NAME ]]; then
   # Get MAS instance unique string
-  UNIQ_STR=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION 2>/dev/null | jq ".Stacks[0].Outputs[] | select(.OutputKey == \"ClusterUniqueString\").OutputValue" | tr -d '"')
+  UNIQ_STR=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME --region $REGION 2>/dev/null | jq ".StackResources[] | select(.LogicalResourceId == \"DeploymentRoleProfile\").PhysicalResourceId" | tr -d '"' | cut -d '-' -f 5)
   if [[ -z $UNIQ_STR ]]; then
     echo "ERROR: Could not retrieve the unique string from the stack. Make sure stack name and region parameters are correct."
     exit 1
   fi
-  echo "Deleting by 'stack-name'"
+  echo "Deleting by 'stack-name' $STACK_NAME"
 elif [[ -n UNIQUE_STR ]]; then
   UNIQ_STR=$UNIQUE_STR
-  echo "Deleting by 'unique-string'"
+  echo "Deleting by 'unique-string' $UNIQ_STR"
 fi
 
 echo "==== Execution started at `date` ===="  
