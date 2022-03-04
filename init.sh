@@ -264,7 +264,7 @@ if [[ $PRE_VALIDATION == "pass" ]]; then
     log "===== PROVISIONING COMPLETED ====="
     export STATUS=SUCCESS
     export STATUS_MSG="MAS deployment completed successfully."
-    export IMPORT_CERT_MSG="Please import the attached certificate into the browser to access MAS UI."
+    export MESSAGE_TEXT="Please import the attached certificate into the browser to access MAS UI."
     export OPENSHIFT_CLUSTER_CONSOLE_URL="https:\/\/console-openshift-console.apps.${CLUSTER_NAME}.${BASE_DOMAIN}"
     export OPENSHIFT_CLUSTER_API_URL="https:\/\/api.${CLUSTER_NAME}.${BASE_DOMAIN}:6443"
     export OPENSHIFT_CLUSTER_API_URL="https:\/\/api.${CLUSTER_NAME}.${BASE_DOMAIN}:6443"

@@ -117,7 +117,7 @@ mark_provisioning_failed() {
   elif [[ $retcode -eq 24 ]]; then
     export STATUS_MSG="Failure in configuring OCP cluster."
   fi
-  export IMPORT_CERT_MSG=NA
+  export MESSAGE_TEXT=NA
   export OPENSHIFT_CLUSTER_CONSOLE_URL=NA
   export OPENSHIFT_CLUSTER_API_URL=NA
   export MAS_URL_INIT_SETUP=NA

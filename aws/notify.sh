@@ -2,7 +2,8 @@
 
 # This script will send email notification using AWS SES service
 cd $GIT_REPO_HOME
-MSG_FILE_SRC="aws/notification/email/message.json"
+MSG_FILE_SRC_DETAILS="aws/notification/email/message-details.json"
+MSG_FILE_SRC_CREDS="aws/notification/email/message-creds.json"
 MSG_FILE="aws/notification/email/message-updated.json"
 
 ## Raw email using SES
@@ -43,10 +44,11 @@ if [[ -z $RECEPIENT ]]; then
     log "No verified email addresses found in the SES service in $DEPLOY_REGION region, no email will be sent"
 else
     log "Found verified email addresses $RECEPIENT"
-    /usr/bin/cp -f $MSG_FILE_SRC $MSG_FILE
+    log "Sending details email"
+    /usr/bin/cp -f $MSG_FILE_SRC_DETAILS $MSG_FILE
     sed -i "s/\[SENDER\]/$FROM_EMAIL/g" $MSG_FILE
     sed -i "s/\[RECEIVER\]/$RECEPIENT/g" $MSG_FILE
-    sed -i "s/\[IMPORT-CERT-MSG\]/$IMPORT_CERT_MSG/g" $MSG_FILE
+    sed -i "s/\[MESSAGE-TEXT\]/$MESSAGE_TEXT/g" $MSG_FILE
     sed -i "s/\[STATUS\]/$STATUS/g" $MSG_FILE
     sed -i "s/\[REGION\]/$DEPLOY_REGION/g" $MSG_FILE
     sed -i "s/\[UNIQ-STR\]/$RANDOM_STR/g" $MSG_FILE
@@ -61,6 +63,21 @@ else
     sed -i "s/\[MAS-PASSWORD\]/$MAS_PASSWORD/g" $MSG_FILE
     sed -i "s/\[SLS-ENDPOINT-URL\]/$CALL_SLS_URL/g" $MSG_FILE
     sed -i "s/\[BAS-ENDPOINT-URL\]/$CALL_BAS_URL/g" $MSG_FILE
+    sed -i "s/\[CA-CERT\]/$certcontents/g" $MSG_FILE
+    log "Sending email using below file ..."
+    cat $MSG_FILE
+    aws ses send-raw-email --cli-binary-format raw-in-base64-out --raw-message file://${MSG_FILE} --region $DEPLOY_REGION
+    log "Sending credentials email"
+    MESSAGE_TEXT=""
+    /usr/bin/cp -f $MSG_FILE_SRC_CREDS $MSG_FILE
+    sed -i "s/\[SENDER\]/$FROM_EMAIL/g" $MSG_FILE
+    sed -i "s/\[RECEIVER\]/$RECEPIENT/g" $MSG_FILE
+    sed -i "s/\[MESSAGE-TEXT\]/$MESSAGE_TEXT/g" $MSG_FILE
+    sed -i "s/\[STATUS\]/$STATUS/g" $MSG_FILE
+    sed -i "s/\[REGION\]/$DEPLOY_REGION/g" $MSG_FILE
+    sed -i "s/\[UNIQ-STR\]/$RANDOM_STR/g" $MSG_FILE
+    sed -i "s/\[OCP-PASSWORD\]/$OPENSHIFT_PASSWORD/g" $MSG_FILE
+    sed -i "s/\[MAS-PASSWORD\]/$MAS_PASSWORD/g" $MSG_FILE
     sed -i "s/\[CA-CERT\]/$certcontents/g" $MSG_FILE
     log "Sending email using below file ..."
     cat $MSG_FILE

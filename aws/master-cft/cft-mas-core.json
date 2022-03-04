@@ -115,6 +115,15 @@
         "BASPublicCertificateUrl": {
             "Description": "Enter the HTTP or S3 location of the service's public certificate that you retrieved from the 'ca.crt' file in the 'mas-*-bas-cfg' route in the MAS core namespace.",
             "Type": "String"
+        },
+        "EmailNotification": {
+            "Description": "Indicate whether you want to receive an email notification containing environment access details and credentials to the addresses configured in SES.",
+            "Default": false,
+            "Type": "String",
+            "AllowedValues": [
+                true,
+                false
+            ]
         }
     },
     "Metadata": {
@@ -196,6 +205,14 @@
                         "BASEndpointUrl",
                         "BASAPIKey",
                         "BASPublicCertificateUrl"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Email notification choice. (Change the value to 'true' explicitly to receive an email notification, provided you have email addresses configured in SES. Make sure email addresses are authorized as the notification contains credentials of the MAS instance)"
+                    },
+                    "Parameters": [
+                        "EmailNotification"
                     ]
                 }
             ]
@@ -839,6 +856,10 @@
                                 "' '",
                                 {
                                     "Ref": "OpenShiftPassword"
+                                },
+                                "' '",
+                                {
+                                    "Ref": "EmailNotification"
                                 },
                                 "' ",
                                 "2>&1 | tee mas-provisioning.log; ",
