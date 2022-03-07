@@ -117,7 +117,7 @@
             "Type": "String"
         },
         "EmailNotification": {
-            "Description": "Indicate whether you want to receive an email notification containing environment access details and credentials to the addresses configured in SES.",
+            "Description": "Indicate whether you want to receive emails that contain the connection details and credentials for the Suite. These emails are sent only to the verified email addresses that you configured in the Amazon SES service.",
             "Default": false,
             "Type": "String",
             "AllowedValues": [
@@ -209,7 +209,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Email notification choice. (Change the value to 'true' explicitly to receive an email notification, provided you have email addresses configured in SES. This is a concent from the buyer that authorized email addresses are defined in the SES, as the notification contains credentials of the MAS deployment)"
+                        "default": "Email notification"
                     },
                     "Parameters": [
                         "EmailNotification"

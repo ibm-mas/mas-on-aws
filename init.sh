@@ -291,12 +291,6 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
     sleep 30
     log "Buyer has explicitly opted for email notification, sending notification"
     ./notify.sh
-  else
-    log "Buyer has not opted for email notification, not sending notification"
-    # Create a file with OCP credentials
-    echo "OpenShift user = masocpuser" >> $GIT_REPO_HOME/$CLOUD_TYPE/ocp.cred
-    echo "OpenShift password = masocp${RANDOM_STR}pass" >> $GIT_REPO_HOME/$CLOUD_TYPE/ocp.cred
-    chmod 600 $GIT_REPO_HOME/$CLOUD_TYPE/ocp.cred
   fi
 
   # Upload the log file to s3
