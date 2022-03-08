@@ -223,7 +223,7 @@ if [[ $VPC_ID != "null" ]]; then
   LOAD_BALANCERS_V2=$(aws elbv2 describe-load-balancers --region $REGION | jq ".LoadBalancers[] | select(.VpcId == \"$VPC_ID\").LoadBalancerArn" | tr -d '"')
   echo "LOAD_BALANCERS_V2 = $LOAD_BALANCERS_V2"
   if [[ -n $LOAD_BALANCERS_V2 ]]; then
-    SLEEPTIME=60
+    SLEEPTIME=120
     echo "Found v2 load balancers for this MAS instance"
     for inst in $LOAD_BALANCERS_V2; do
       aws elbv2 delete-load-balancer --region $REGION --load-balancer-arn "$inst"
