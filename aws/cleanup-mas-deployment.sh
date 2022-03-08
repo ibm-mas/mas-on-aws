@@ -65,9 +65,10 @@ else
     esac
   done
 fi
-echo "Stack name: $STACK_NAME"
-echo "Unique string: $UNIQUE_STR"
-echo "Region: $REGION"
+echo "Script Inputs:"
+echo " Stack name = $STACK_NAME"
+echo " Unique string = $UNIQUE_STR"
+echo " Region = $REGION"
 
 # Check for supported region
 if [[ -z $REGION ]]; then
@@ -446,7 +447,7 @@ if [[ -n $INSTPROFS ]]; then
     fi
     # Delete instance profile
     aws iam delete-instance-profile --instance-profile-name $inst
-    echo "Deleted IAM instance profiles ${inst}"
+    echo "Deleted IAM instance profile ${inst}"
   done
 else
   echo "No IAM instance profiles for this MAS instance"
