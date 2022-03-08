@@ -10,7 +10,7 @@
 # - Internet gateway
 # - Subnets
 # - Routing tables
-# - Netowkr ALCs
+# - Network ACLs
 # - Security groups
 # - VPC
 # - S3 buckets
@@ -19,6 +19,7 @@
 # - IAM policies
 # - IAM roles
 # - Private hosted zone
+# - CloudWatch Log groups
 # - CloudFormation stack
 #
 
@@ -28,13 +29,17 @@ set -e
 # Functions
 usage() {
   echo "Usage: cleanup-mas-deployment.sh -s stack-name -u unique-string -r region-code"
-  echo "       Provide either 'stack-name' or 'unique-string' parameter."
-  echo "       If CloudFormation stack is present and it has 'ClusterUniqueString' output variable present, then provide the 'stack-name' parameter."
-  echo "       If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
-  echo "       If 'stack-name' is provided, 'unique-string' will be ignored."
-  echo "       For example, "
-  echo "         cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
-  echo "         cleanup-mas-deployment.sh -u gf5thj -r us-east-1"
+  echo "  Provide either 'stack-name' or 'unique-string' parameter."
+  echo " "
+  echo "  - If CloudFormation stack is present and it has the resource with 'Logical ID' named 'DeploymentRoleProfile',"
+  echo "    you can delete the MAS instance by stack name. (Check the 'Resources' tab on CloudFormation stack)"
+  echo "  - If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
+  echo "    In this case, the associated CloudFormation stack won't be deleted even if it exists. It should be deleted explicitly."
+  echo " "
+  echo "  If 'stack-name' is provided, 'unique-string' will be ignored."
+  echo "  For example, "
+  echo "   cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
+  echo "   cleanup-mas-deployment.sh -u gf5thj -r us-east-1"
   exit 1
 }
 
@@ -60,9 +65,10 @@ else
     esac
   done
 fi
-echo "Stack name: $STACK_NAME"
-echo "Unique string: $UNIQUE_STR"
-echo "Region: $REGION"
+echo "Script Inputs:"
+echo " Stack name = $STACK_NAME"
+echo " Unique string = $UNIQUE_STR"
+echo " Region = $REGION"
 
 # Check for supported region
 if [[ -z $REGION ]]; then
@@ -85,15 +91,15 @@ fi
 
 if [[ -n $STACK_NAME ]]; then
   # Get MAS instance unique string
-  UNIQ_STR=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION 2>/dev/null | jq ".Stacks[0].Outputs[] | select(.OutputKey == \"ClusterUniqueString\").OutputValue" | tr -d '"')
+  UNIQ_STR=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME --region $REGION 2>/dev/null | jq ".StackResources[] | select(.LogicalResourceId == \"DeploymentRoleProfile\").PhysicalResourceId" | tr -d '"' | cut -d '-' -f 5)
   if [[ -z $UNIQ_STR ]]; then
     echo "ERROR: Could not retrieve the unique string from the stack. Make sure stack name and region parameters are correct."
     exit 1
   fi
-  echo "Deleting by 'stack-name'"
+  echo "Deleting by 'stack-name' $STACK_NAME"
 elif [[ -n UNIQUE_STR ]]; then
   UNIQ_STR=$UNIQUE_STR
-  echo "Deleting by 'unique-string'"
+  echo "Deleting by 'unique-string' $UNIQ_STR"
 fi
 
 echo "==== Execution started at `date` ===="  
@@ -218,7 +224,7 @@ if [[ $VPC_ID != "null" ]]; then
   LOAD_BALANCERS_V2=$(aws elbv2 describe-load-balancers --region $REGION | jq ".LoadBalancers[] | select(.VpcId == \"$VPC_ID\").LoadBalancerArn" | tr -d '"')
   echo "LOAD_BALANCERS_V2 = $LOAD_BALANCERS_V2"
   if [[ -n $LOAD_BALANCERS_V2 ]]; then
-    SLEEPTIME=60
+    SLEEPTIME=120
     echo "Found v2 load balancers for this MAS instance"
     for inst in $LOAD_BALANCERS_V2; do
       aws elbv2 delete-load-balancer --region $REGION --load-balancer-arn "$inst"
@@ -441,7 +447,7 @@ if [[ -n $INSTPROFS ]]; then
     fi
     # Delete instance profile
     aws iam delete-instance-profile --instance-profile-name $inst
-    echo "Deleted IAM instance profiles ${inst}"
+    echo "Deleted IAM instance profile ${inst}"
   done
 else
   echo "No IAM instance profiles for this MAS instance"

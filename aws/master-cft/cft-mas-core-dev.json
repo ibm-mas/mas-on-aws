@@ -6,6 +6,7 @@
             "Description": "Select your preferred Suite offering type.",
             "Type": "String",
             "Default": "MAS Core + Cloud Pak for Data",
+            "MinLength" : "1",
             "AllowedValues": [
                 "MAS Core + Cloud Pak for Data",
                 "MAS Core + Manage (no Cloud Pak for Data)"
@@ -17,12 +18,14 @@
         },
         "BootnodeSGIngressCidrIp": {
             "Description": "Use CIDR notation to enter the IP addresses that can access the bootnode. For example, 192.12.33.3/32. To allow access from all IP addresses, enter 0.0.0.0/0.",
-            "Type": "String"
+            "Type": "String",
+            "MinLength" : "1"
         },
         "ClusterSize": {
             "Description": "Select your preferred cluster size. All master nodes (M) are m5.2xlarge Amazon EC2 instances. All worker nodes (W) are m5.4xlarge instances. Choose from: small (3M, 3W, total memory: 288GB), medium (3M, 5W, total memory: 416GB), or large (5M, 7W, total memory: 608GB).",
             "Type": "String",
             "Default": "small",
+            "MinLength" : "1",
             "AllowedValues": [
                 "small",
                 "medium",
@@ -45,16 +48,19 @@
         "EntitledRegistryKey": {
             "Description": "Enter the registry key that you downloaded from the IBM Container Library.",
             "Type": "String",
-            "NoEcho": true
+            "NoEcho": true,
+            "MinLength" : "1"
         },
         "OpenShiftPullSecret": {
             "Description": "Enter the JSON text from the pull secret file that you downloaded from the Red Hat Hybrid Cloud Console.",
             "Type": "String",
-            "NoEcho": true
+            "NoEcho": true,
+            "MinLength" : "1"
         },
         "MASLicenseUrl": {
             "Description": "Enter the HTTP or S3 location of your Suite license key file, for example: s3://masocp-license/entitlement.lic",
-            "Type": "String"
+            "Type": "String",
+            "MinLength" : "1"
         },
         "MASManageDBUser": {
             "Description": "Enter the username that the Maximo Manage application uses to connect to the database.",
@@ -109,6 +115,15 @@
         "BASPublicCertificateUrl": {
             "Description": "Enter the HTTP or S3 location of the service's public certificate that you retrieved from the 'ca.crt' file in the 'mas-*-bas-cfg' route in the MAS core namespace.",
             "Type": "String"
+        },
+        "EmailNotification": {
+            "Description": "Indicate whether you want to receive emails that contain the connection details and credentials for the Suite. These emails are sent only to the verified email addresses that you configured in the Amazon SES service.",
+            "Default": false,
+            "Type": "String",
+            "AllowedValues": [
+                true,
+                false
+            ]
         }
     },
     "Metadata": {
@@ -190,6 +205,14 @@
                         "BASEndpointUrl",
                         "BASAPIKey",
                         "BASPublicCertificateUrl"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Email notification"
+                    },
+                    "Parameters": [
+                        "EmailNotification"
                     ]
                 }
             ]
@@ -833,6 +856,10 @@
                                 "' '",
                                 {
                                     "Ref": "OpenShiftPassword"
+                                },
+                                "' '",
+                                {
+                                    "Ref": "EmailNotification"
                                 },
                                 "' ",
                                 "2>&1 | tee mas-provisioning.log; ",

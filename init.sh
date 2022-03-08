@@ -30,6 +30,7 @@ export MAS_DB_IMPORT_DEMO_DATA=${23}
 export EXS_OCP_URL=${24}
 export EXS_OCP_USER=${25}
 export EXS_OCP_PWD=${26}
+export EMAIL_NOTIFICATION=${27}
 
 # Load helper functions
 . helper.sh
@@ -171,6 +172,7 @@ echo " MAS_DB_IMPORT_DEMO_DATA: $MAS_DB_IMPORT_DEMO_DATA"
 echo " EXS_OCP_URL: $EXS_OCP_URL"
 echo " EXS_OCP_USER: $EXS_OCP_USER"
 echo " EXS_OCP_PWD: $EXS_OCP_PWD"
+echo " EMAIL_NOTIFICATION: $EMAIL_NOTIFICATION"
 
 echo " HOME: $HOME"
 echo " GIT_REPO_HOME: $GIT_REPO_HOME"
@@ -262,7 +264,7 @@ if [[ $PRE_VALIDATION == "pass" ]]; then
     log "===== PROVISIONING COMPLETED ====="
     export STATUS=SUCCESS
     export STATUS_MSG="MAS deployment completed successfully."
-    export IMPORT_CERT_MSG="Please import the attached certificate into the browser to access MAS UI."
+    export MESSAGE_TEXT="Please import the attached certificate into the browser to access MAS UI."
     export OPENSHIFT_CLUSTER_CONSOLE_URL="https:\/\/console-openshift-console.apps.${CLUSTER_NAME}.${BASE_DOMAIN}"
     export OPENSHIFT_CLUSTER_API_URL="https:\/\/api.${CLUSTER_NAME}.${BASE_DOMAIN}:6443"
     export OPENSHIFT_CLUSTER_API_URL="https:\/\/api.${CLUSTER_NAME}.${BASE_DOMAIN}:6443"
@@ -285,9 +287,11 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
   curl -k -X PUT -H 'Content-Type:' --data-binary "{\"Status\":\"SUCCESS\",\"Reason\":\"MAS deployment complete\",\"UniqueId\":\"ID-$CLOUD_TYPE-$CLUSTER_SIZE-$CLUSTER_NAME\",\"Data\":\"${STATUS}#${STATUS_MSG}\"}" "$DEPLOY_WAIT_HANDLE"
 
   # Send email notification
-  sleep 30
-  log "Sending notification"
-  ./notify.sh
+  if [[ $EMAIL_NOTIFICATION == "true" ]]; then
+    sleep 30
+    log "Buyer has explicitly opted for email notification, sending notification"
+    ./notify.sh
+  fi
 
   # Upload the log file to s3
   aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH
