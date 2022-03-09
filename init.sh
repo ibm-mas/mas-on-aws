@@ -277,12 +277,6 @@ if [[ $PRE_VALIDATION == "pass" ]]; then
   fi
 fi
 
-# Delete sensitive details from the log file
-cd $GIT_REPO_HOME
-sed -i '/openshift_password/d' mas-provisioning.log
-sed -i '/aws_secret_access_key/d' mas-provisioning.log
-log "Deleted sensitive details from log file"
-
 ## Complete the template deployment
 if [[ $CLOUD_TYPE == "aws" ]]; then
   cd $GIT_REPO_HOME/$CLOUD_TYPE
