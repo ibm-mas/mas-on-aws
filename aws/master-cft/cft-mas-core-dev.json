@@ -101,7 +101,7 @@
             "Type": "String"
         },
         "SLSPublicCertificateUrl": {
-            "Description": "Enter the HTTP or S3 location of the service's public certificate that you retrieved from the 'ca.crt' file in the 'mas-*-sls-cfg' route in the MAS core namespace.",
+            "Description": "Enter the HTTP or S3 location of the service's public certificate that you retrieved from the 'ca.crt' file in the 'mas-*-sls-cfg' secret in the MAS core namespace.",
             "Type": "String"
         },
         "BASEndpointUrl": {
@@ -113,7 +113,7 @@
             "Type": "String"
         },
         "BASPublicCertificateUrl": {
-            "Description": "Enter the HTTP or S3 location of the service's public certificate that you retrieved from the 'ca.crt' file in the 'mas-*-bas-cfg' route in the MAS core namespace.",
+            "Description": "Enter the HTTP or S3 location of the service's public certificate that you retrieved from the 'ca-bundle.pem' file in the 'mas-*-bas-cfg' secret in the MAS core namespace.",
             "Type": "String"
         },
         "EmailNotification": {
@@ -274,12 +274,24 @@
         }
     },
     "Conditions": {
-        "ShowOCPDetailsInOutput": {
+        "NoExistingOCPCluster": {
             "Fn::Equals": [
                 {
                     "Ref": "OpenShiftClusterApiUrl"
                 },
                 ""
+            ]
+        },
+        "ExistingOCPCluster": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "OpenShiftClusterApiUrl"
+                        },
+                        ""
+                    ]
+                }
             ]
         }
     },
@@ -923,7 +935,7 @@
         },
         "OpenShiftConsoleUrl": {
             "Description": "Url to login to OpenShift console",
-            "Condition": "ShowOCPDetailsInOutput",
+            "Condition": "NoExistingOCPCluster",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -948,7 +960,7 @@
         },
         "OpenShiftApiUrl": {
             "Description": "Url to login to OpenShift Api",
-            "Condition": "ShowOCPDetailsInOutput",
+            "Condition": "NoExistingOCPCluster",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -973,13 +985,13 @@
             }
         },
         "OpenShiftUser": {
-            "Description": "Username to login to OpenShift consple",
-            "Condition": "ShowOCPDetailsInOutput",
+            "Description": "Username to login to OpenShift console",
+            "Condition": "NoExistingOCPCluster",
             "Value": "masocpuser"
         },
         "OpenShiftPassword": {
             "Description": "Username to login to OpenShift console",
-            "Condition": "ShowOCPDetailsInOutput",
+            "Condition": "NoExistingOCPCluster",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -998,6 +1010,7 @@
         },
         "MASInitialSetupUrl": {
             "Description": "Url to perform MAS initial setup, make sure you have imported the MAS public certificate into the browser",
+            "Condition": "NoExistingOCPCluster",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -1028,8 +1041,30 @@
                 ]
             }
         },
+        "MASInitialSetupUrlLogin": {
+            "Description": "Url to perform MAS initial setup, make sure you have imported the MAS public certificate into the browser",
+            "Condition": "ExistingOCPCluster",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://admin.mas-",
+                        {
+                            "Fn::GetAtt": [
+                                "CallLambdaRandomizer",
+                                "Lower_RandomString"
+                            ]
+                        },
+                        ".apps.",
+                        { "Fn::Select" : [ "1", { "Fn::Split": ["api.", "Ref": "OpenShiftClusterApiUrl"]}] },
+                        "/initialsetup"
+                    ]
+                ]
+            }
+        },
         "MASAdminUrl": {
             "Description": "Url to login to MAS Admin UI, make sure you have imported the MAS public certificate into the browser",
+            "Condition": "NoExistingOCPCluster",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -1059,8 +1094,29 @@
                 ]
             }
         },
+        "MASAdminUrlLogin": {
+            "Description": "Url to login to MAS Admin UI, make sure you have imported the MAS public certificate into the browser",
+            "Condition": "ExistingOCPCluster",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://admin.mas-",
+                        {
+                            "Fn::GetAtt": [
+                                "CallLambdaRandomizer",
+                                "Lower_RandomString"
+                            ]
+                        },
+                        ".apps.",
+                        { "Fn::Select" : [ "1", { "Fn::Split": ["api.", "Ref": "OpenShiftClusterApiUrl"]}] }
+                    ]
+                ]
+            }
+        },
         "MASWorkspaceUrl": {
             "Description": "Url to login to MAS Workspace, make sure you have imported the MAS public certificate into the browser",
+            "Condition": "NoExistingOCPCluster",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -1086,6 +1142,26 @@
                                 "ZoneName"
                             ]
                         }
+                    ]
+                ]
+            }
+        },
+        "MASWorkspaceUrlLogin": {
+            "Description": "Url to login to MAS Workspace, make sure you have imported the MAS public certificate into the browser",
+            "Condition": "ExistingOCPCluster",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://wsmasocp.home.mas-",
+                        {
+                            "Fn::GetAtt": [
+                                "CallLambdaRandomizer",
+                                "Lower_RandomString"
+                            ]
+                        },
+                        ".apps.",
+                        { "Fn::Select" : [ "1", { "Fn::Split": ["api.", "Ref": "OpenShiftClusterApiUrl"]}] }
                     ]
                 ]
             }
