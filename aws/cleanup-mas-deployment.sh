@@ -513,18 +513,30 @@ fi
 echo "---------------------------------------------"
 
 ## Delete CloudWatch log groups
-echo "Checking for CloudWatch log groups"
+echo "Checking for CloudWatch Log groups"
 CWLG=$(aws logs describe-log-groups --region $REGION | jq ".logGroups[] | select(.logGroupName | contains(\"${STACK_NAME}-LambdaFunction\")).logGroupName" | tr -d '"')
 echo "CWLG = $CWLG"
 if [[ -n $CWLG ]]; then
-  echo "Found CloudWatch log groups for this MAS instance"
+  echo "Found OCP installer created CloudWatch Log groups for this MAS instance"
   for inst in $CWLG; do
     # Delete log group
     aws logs delete-log-group --log-group-name $inst --region $REGION 
-    echo "Deleted CloudWatch log group $inst"
+    echo "Deleted OCP installer created CloudWatch Log group $inst"
   done
 else
-  echo "No CloudWatch log groups for this MAS instance"
+  echo "No OCP installer created CloudWatch Log groups for this MAS instance"
+fi
+CWLG=$(aws logs describe-log-groups --region $REGION | jq ".logGroups[] | select(.logGroupName | contains(\"${UNIQ_STR}\")).logGroupName" | tr -d '"')
+echo "CWLG = $CWLG"
+if [[ -n $CWLG ]]; then
+  echo "Found automation created CloudWatch Log groups for this MAS instance"
+  for inst in $CWLG; do
+    # Delete log group
+    aws logs delete-log-group --log-group-name $inst --region $REGION 
+    echo "Deleted automation created CloudWatch Log group $inst"
+  done
+else
+  echo "No automation created CloudWatch Log groups for this MAS instance"
 fi
 echo "---------------------------------------------"
 

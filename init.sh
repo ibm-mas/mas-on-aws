@@ -49,7 +49,6 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
   # TODO Temporary code to install CloudWatch agent. Later this will be done in AMI, and remove the code
   #-----------------------------------------
   cd /tmp
-  https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Agent-commandline-fleet.html
   wget https://s3.amazonaws.com/amazoncloudwatch-agent/redhat/amd64/latest/amazon-cloudwatch-agent.rpm
   rpm -U ./amazon-cloudwatch-agent.rpm
   #-----------------------------------------
