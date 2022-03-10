@@ -171,11 +171,7 @@
                 "sts:GetCallerIdentity",
                 "tag:GetResources",
                 "tag:TagResources",
-                "tag:UntagResources",
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:DescribeLogStreams"              
+                "tag:UntagResources"            
             ],
             "Resource": [
                 "*"
