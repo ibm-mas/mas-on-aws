@@ -293,6 +293,12 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
     ./notify.sh
   fi
 
+  # Delete sensitive details from the log file
+  cd $GIT_REPO_HOME
+  sed -i '/openshift_password/d' mas-provisioning.log
+  sed -i '/aws_secret_access_key/d' mas-provisioning.log
+  log "Deleted sensitive details from log file"
+  
   # Upload the log file to s3
   aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH
 fi
