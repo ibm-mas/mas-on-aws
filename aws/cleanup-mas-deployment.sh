@@ -246,6 +246,7 @@ if [[ $VPC_ID != "null" ]]; then
     for inst in $NW_IFS; do
       aws ec2 delete-network-interface --network-interface-id $inst --region $REGION
       echo "Deleted network interface $inst"
+      sleep 5
     done
   else
     echo "No network interfaces found for this MAS instance"
