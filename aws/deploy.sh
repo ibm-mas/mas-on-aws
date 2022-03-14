@@ -189,14 +189,14 @@ EOT
   cd /tmp
   zip -r $BACKUP_FILE_NAME mas-multicloud/*
   set +e
-  aws s3 cp $BACKUP_FILE_NAME $OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH
+  aws s3 cp $BACKUP_FILE_NAME $DEPLOYMENT_CONTEXT_UPLOAD_PATH
   retcode=$?
   if [[ $retcode -ne 0 ]]; then
     log "Failed while uploading deployment context to S3"
     exit 23
   fi
   set -e
-  log "OCP cluster Terraform configuration backed up at $OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH in file $CLUSTER_NAME.zip"
+  log "OCP cluster Terraform configuration backed up at $DEPLOYMENT_CONTEXT_UPLOAD_PATH in file $CLUSTER_NAME.zip"
 else
   log "==== Existing OCP cluster provided, skipping the cluster creation, Bastion host creation and S3 upload of deployment context ===="
 fi
