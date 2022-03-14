@@ -72,7 +72,8 @@ export MASTER_NODE_COUNT="3"
 export WORKER_NODE_COUNT="3"
 export AZ_MODE="multi_zone"
 export MAS_IMAGE_TEST_DOWNLOAD="cp.icr.io/cp/mas/admin-dashboard:5.1.27"
-export OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH="s3://masocp-${RANDOM_STR}-bucket-${DEPLOY_REGION}/ocp-cluster-provisioning-deployment-context/"
+export BACKUP_FILE_NAME=terraform-backup-${CLUSTER_NAME}.zip
+export DEPLOYMENT_CONTEXT_UPLOAD_PATH="s3://masocp-${RANDOM_STR}-bucket-${DEPLOY_REGION}/ocp-cluster-provisioning-deployment-context/"
 # Mongo variables
 export MAS_INSTANCE_ID="mas-${RANDOM_STR}"
 export MAS_CONFIG_DIR=/var/tmp/masconfigdir
@@ -183,6 +184,9 @@ echo " OPENSHIFT_PULL_SECRET_FILE_PATH: $OPENSHIFT_PULL_SECRET_FILE_PATH"
 echo " MASTER_NODE_COUNT: $MASTER_NODE_COUNT"
 echo " WORKER_NODE_COUNT: $WORKER_NODE_COUNT"
 echo " AZ_MODE: $AZ_MODE"
+echo " MAS_IMAGE_TEST_DOWNLOAD: $MAS_IMAGE_TEST_DOWNLOAD"
+echo " BACKUP_FILE_NAME: $BACKUP_FILE_NAME"
+echo " DEPLOYMENT_CONTEXT_UPLOAD_PATH: $DEPLOYMENT_CONTEXT_UPLOAD_PATH"
 echo " MAS_INSTANCE_ID: $MAS_INSTANCE_ID"
 echo " MAS_CONFIG_DIR: $MAS_CONFIG_DIR"
 echo " KAFKA_NAMESPACE: $KAFKA_NAMESPACE"
@@ -300,6 +304,6 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
   log "Deleted sensitive details from log file"
   
   # Upload the log file to s3
-  aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $OCP_TERRAFORM_CONFIG_UPLOAD_S3_PATH
+  aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $DEPLOYMENT_CONTEXT_UPLOAD_PATH
 fi
 exit $RESP_CODE

@@ -35,6 +35,7 @@ echo " IAM_POLICY_NAME: $IAM_POLICY_NAME"
 echo " IAM_USER_NAME: $IAM_USER_NAME"
 echo " SLS_STORAGE_CLASS: $SLS_STORAGE_CLASS"
 echo " BAS_META_STORAGE: $BAS_META_STORAGE"
+echo " CPD_BLOCK_STORAGE_CLASS: $CPD_BLOCK_STORAGE_CLASS"
 echo " SSH_PUB_KEY: $SSH_PUB_KEY"
 
 ## Download files from S3 bucket
@@ -181,7 +182,6 @@ EOT
   set -e
  
   # Backup Terraform configuration
-  BACKUP_FILE_NAME=terraform-backup-${CLUSTER_NAME}.zip
   cd $GIT_REPO_HOME
   rm -rf /tmp/mas-multicloud
   mkdir /tmp/mas-multicloud
