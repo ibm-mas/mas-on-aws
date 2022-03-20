@@ -441,7 +441,11 @@
                                     "Action": [
                                         "ses:ListIdentities",
                                         "route53:ListHostedZones",
-                                        "ses:GetIdentityVerificationAttributes"
+                                        "ses:GetIdentityVerificationAttributes",
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents",
+                                        "logs:DescribeLogStreams"
                                     ],
                                     "Resource": "*"
                                 }

@@ -64,7 +64,7 @@ if [[ $CLOUD_TYPE == "aws" ]]; then
       "files": {
         "collect_list": [{
           "file_path": "/root/mas-on-aws/mas-provisioning.log",
-          "log_group_name": "masocp-${RANDOM_STR}",
+          "log_group_name": "/ibm/mas/masocp-${RANDOM_STR}",
           "log_stream_name": "mas-provisioning-logs"
         }]
       }
