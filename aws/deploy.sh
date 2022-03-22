@@ -3,10 +3,6 @@ set -e
 
 # This script will initiate the provisioning process of MAS. It will perform following steps,
 
-# Load helper functions
-. helper.sh
-export -f mark_provisioning_failed
-
 ## Variables
 export AWS_DEFAULT_REGION=$DEPLOY_REGION
 MASTER_INSTANCE_TYPE="m5.2xlarge"
@@ -42,6 +38,7 @@ echo " BAS_META_STORAGE: $BAS_META_STORAGE"
 echo " CPD_BLOCK_STORAGE_CLASS: $CPD_BLOCK_STORAGE_CLASS"
 echo " SSH_PUB_KEY: $SSH_PUB_KEY"
 
+set +x
 ## Download files from S3 bucket
 # Download MAS license
 log "==== Downloading MAS license ===="
@@ -51,16 +48,18 @@ if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
   if [ $mas_license -ne 200 ]; then
     PRE_VALIDATION=fail
     SCRIPT_STATUS=18
-    mark_provisioning_failed $SCRIPT_STATUS
+    return $SCRIPT_STATUS
   fi
 elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
   mas_license=$(aws s3 cp "$MAS_LICENSE_URL" entitlement.lic 2> /dev/null);
   if [ $ret -ne 0 ]; then
     PRE_VALIDATION=fail
     SCRIPT_STATUS=18
-    mark_provisioning_failed $SCRIPT_STATUS
+    return $SCRIPT_STATUS
   fi
 fi
+
+set -x
 
 if [[ -f entitlement.lic ]]; then
   chmod 600 entitlement.lic
