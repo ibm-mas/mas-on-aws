@@ -931,12 +931,6 @@
                 ]
             }
         },
-        "BootnodeInstanceID": {
-            "Description": "The Bootnode instance Id",
-            "Value": {
-                "Ref": "Bootnode"
-            }
-        },
         "OpenShiftConsoleUrl": {
             "Description": "Url to login to OpenShift console",
             "Condition": "NoExistingOCPCluster",
