@@ -46,17 +46,15 @@ cd $GIT_REPO_HOME
 if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
   mas_license=$(wget --server-response "$MAS_LICENSE_URL" -O entitlement.lic 2>&1 | awk '/^  HTTP/{print $2}')
   if [ $mas_license -ne 200 ]; then
-    PRE_VALIDATION=fail
-    SCRIPT_STATUS=18
-    return $SCRIPT_STATUS
+    log "Invalid MAS License URL"
+    exit 18
   fi
 elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
   mas_license=$(aws s3 cp "$MAS_LICENSE_URL" entitlement.lic 2> /dev/null);
   ret=$?
   if [ $ret -ne 0 ]; then
-    PRE_VALIDATION=fail
-    SCRIPT_STATUS=18
-    return $SCRIPT_STATUS
+    log "Invalid MAS License URL"
+    exit 18
   fi
 fi
 
