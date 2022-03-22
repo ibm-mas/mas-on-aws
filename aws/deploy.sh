@@ -3,6 +3,10 @@ set -e
 
 # This script will initiate the provisioning process of MAS. It will perform following steps,
 
+# Load helper functions
+. helper.sh
+export -f mark_provisioning_failed
+
 ## Variables
 export AWS_DEFAULT_REGION=$DEPLOY_REGION
 MASTER_INSTANCE_TYPE="m5.2xlarge"
@@ -43,13 +47,25 @@ echo " SSH_PUB_KEY: $SSH_PUB_KEY"
 log "==== Downloading MAS license ===="
 cd $GIT_REPO_HOME
 if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
-  wget "$MAS_LICENSE_URL" -O entitlement.lic
+  mas_license=$(wget --server-response "$MAS_LICENSE_URL" -O entitlement.lic 2>&1 | awk '/^  HTTP/{print $2}')
+  if [ $mas_license -ne 200 ]; then
+    PRE_VALIDATION=fail
+    SCRIPT_STATUS=18
+    mark_provisioning_failed $SCRIPT_STATUS
+  fi
 elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
-  aws s3 cp "$MAS_LICENSE_URL" entitlement.lic
+  mas_license=$(aws s3 cp "$MAS_LICENSE_URL" entitlement.lic 2> /dev/null);
+  if [ $ret -ne 0 ]; then
+    PRE_VALIDATION=fail
+    SCRIPT_STATUS=18
+    mark_provisioning_failed $SCRIPT_STATUS
+  fi
 fi
+
 if [[ -f entitlement.lic ]]; then
   chmod 600 entitlement.lic
 fi
+
 # Download SLS certificate
 cd $GIT_REPO_HOME
 if [[ ${SLS_PUB_CERT_URL,,} =~ ^https? ]]; then
