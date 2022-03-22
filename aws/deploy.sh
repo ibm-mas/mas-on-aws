@@ -52,6 +52,7 @@ if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
   fi
 elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
   mas_license=$(aws s3 cp "$MAS_LICENSE_URL" entitlement.lic 2> /dev/null);
+  ret=$?
   if [ $ret -ne 0 ]; then
     PRE_VALIDATION=fail
     SCRIPT_STATUS=18
