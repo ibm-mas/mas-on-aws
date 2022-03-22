@@ -272,7 +272,19 @@ if [[ $DEPLOY_CP4D == "true" ]]; then
   ansible-playbook install-cp4d.yml
   log "==== CP4D deployment completed ===="
 fi
-
+if [[ $DEPLOY_MANAGE == "true" ]]; then
+  # Deploy Manage
+  
+  if [[ (-z $MAS_JDBC_USER) || (-z $MAS_JDBC_PASSWORD) || (-z $MAS_JDBC_URL) || (-z $MAS_JDBC_CERT_URL) ]]; then
+  
+    log "Skipping the JDBC configuration"
+  else
+    # Configure JDBC
+    log "==== Configure JDBC  started ===="
+    ansible-playbook configure-suite-db.yml -vv
+    log "==== Configure JDBC completed ===="  
+  fi
+fi
 ## Deploy MAS
 log "==== MAS deployment started ===="
 ansible-playbook install-suite.yml
@@ -282,16 +294,13 @@ log "==== MAS deployment completed ===="
 if [[ $DEPLOY_MANAGE == "true" ]]; then
   # Deploy Manage
   log "==== MAS Manage deployment started ===="
+  
   ansible-playbook install-app.yml
   log "==== MAS Manage deployment completed ===="
   if [[ (-z $MAS_JDBC_USER) || (-z $MAS_JDBC_PASSWORD) || (-z $MAS_JDBC_URL) || (-z $MAS_JDBC_CERT_URL) ]]; then
-    log "Skipping the Manage app JDBC configuration"
+    log "Skipping the Manage app configuration"
   else
-    # Configure suite DB
-    log "==== MAS Manage configure suite DB started ===="
-    ansible-playbook configure-suite-db.yml -vv
-    log "==== MAS Manage configure suite DB completed ===="
-    # Configure app to use the DB
+      # Configure app to use the DB
     log "==== MAS Manage configure app started ===="
     ansible-playbook configure-app.yml -vv
     log "==== MAS Manage configure app completed ===="
