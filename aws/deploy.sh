@@ -52,6 +52,7 @@ if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
 elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
   mas_license=$(aws s3 cp "$MAS_LICENSE_URL" entitlement.lic 2> /dev/null);
   ret=$?
+  echo $ret
   if [ $ret -ne 0 ]; then
     log "Invalid MAS License URL"
     exit 18
