@@ -38,18 +38,11 @@ echo " BAS_META_STORAGE: $BAS_META_STORAGE"
 echo " CPD_BLOCK_STORAGE_CLASS: $CPD_BLOCK_STORAGE_CLASS"
 echo " SSH_PUB_KEY: $SSH_PUB_KEY"
 
-## Download files from S3 bucket
-# Download MAS license
-log "==== Downloading MAS license ===="
-cd $GIT_REPO_HOME
-if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
-  wget "$MAS_LICENSE_URL" -O entitlement.lic
-elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
-  aws s3 cp "$MAS_LICENSE_URL" entitlement.lic
-fi
 if [[ -f entitlement.lic ]]; then
   chmod 600 entitlement.lic
 fi
+
+## Download files from S3 bucket
 # Download SLS certificate
 cd $GIT_REPO_HOME
 if [[ ${SLS_PUB_CERT_URL,,} =~ ^https? ]]; then

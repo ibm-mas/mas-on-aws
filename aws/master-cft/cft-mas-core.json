@@ -441,7 +441,11 @@
                                     "Action": [
                                         "ses:ListIdentities",
                                         "route53:ListHostedZones",
-                                        "ses:GetIdentityVerificationAttributes"
+                                        "ses:GetIdentityVerificationAttributes",
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents",
+                                        "logs:DescribeLogStreams"
                                     ],
                                     "Resource": "*"
                                 }
@@ -925,12 +929,6 @@
                     "CallLambdaRandomizer",
                     "Lower_RandomString"
                 ]
-            }
-        },
-        "BootnodeInstanceID": {
-            "Description": "The Bootnode instance Id",
-            "Value": {
-                "Ref": "Bootnode"
             }
         },
         "OpenShiftConsoleUrl": {

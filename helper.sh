@@ -105,7 +105,7 @@ mark_provisioning_failed() {
   elif [[ $retcode -eq 17 ]]; then
     export STATUS_MSG="Please provide OCP pull secret."
   elif [[ $retcode -eq 18 ]]; then
-    export STATUS_MSG="Please provide MAS license URL."
+    export STATUS_MSG="Please provide a valid MAS license URL."
   elif [[ $retcode -eq 19 ]]; then
     export STATUS_MSG="Please provide all the inputs to use existing OCP."
   elif [[ $retcode -eq 21 ]]; then
