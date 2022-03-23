@@ -156,7 +156,7 @@ else
 fi
 
 # Check if MAS license is provided
-if [[ -z $MAS_LICENSE_URL || ! ${MAS_LICENSE_URL,,} =~ ^https? || ! ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
+if [[ -z $MAS_LICENSE_URL || (!${MAS_LICENSE_URL,,} =~ ^https? ||  !${MAS_LICENSE_URL,,} =~ ^s3) ]]; then
     log "ERROR: Valid MAS license is reqiuired for MAS deployment"
     SCRIPT_STATUS=18
 else
