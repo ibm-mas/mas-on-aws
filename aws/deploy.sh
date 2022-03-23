@@ -38,33 +38,11 @@ echo " BAS_META_STORAGE: $BAS_META_STORAGE"
 echo " CPD_BLOCK_STORAGE_CLASS: $CPD_BLOCK_STORAGE_CLASS"
 echo " SSH_PUB_KEY: $SSH_PUB_KEY"
 
-set +x
-## Download files from S3 bucket
-# Download MAS license
-log "==== Downloading MAS license ===="
-cd $GIT_REPO_HOME
-if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
-  mas_license=$(wget --server-response "$MAS_LICENSE_URL" -O entitlement.lic 2>&1 | awk '/^  HTTP/{print $2}')
-  if [ $mas_license -ne 200 ]; then
-    log "Invalid MAS License URL"
-    exit 18
-  fi
-elif [[ ${MAS_LICENSE_URL,,} =~ ^s3 ]]; then
-  mas_license=$(aws s3 cp "$MAS_LICENSE_URL" entitlement.lic 2> /dev/null);
-  ret=$?
-  echo $ret
-  if [ $ret -ne 0 ]; then
-    log "Invalid MAS License URL"
-    exit 18
-  fi
-fi
-
-set -x
-
 if [[ -f entitlement.lic ]]; then
   chmod 600 entitlement.lic
 fi
 
+## Download files from S3 bucket
 # Download SLS certificate
 cd $GIT_REPO_HOME
 if [[ ${SLS_PUB_CERT_URL,,} =~ ^https? ]]; then
