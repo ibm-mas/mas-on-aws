@@ -16,14 +16,13 @@ usage() {
   echo "  $ deploy-cp4d.sh -s stack-name -r region-code -e entitlement-key"
   echo
   echo "Optional:"
-  echo "  -m  mas-config-directory"
   echo "  -u  openshift-user"
   echo "  -p  openshift-password"
   echo
   echo "Provide the parameters 'openshift-user' and 'openshift-password' if the OpenShift user and password has been changed."
   echo
   echo "For example, "
-  echo "  $ deploy-cp4d.sh -s mas-cp4d -r us-east-1 -e asdFHJKsdUd....P,ii2SdWOjak -m /var/tmp/masconfigdir -u masocpuser -p masocpuserpass"
+  echo "  $ deploy-cp4d.sh -s mas-cp4d -r us-east-1 -e asdFHJKsdUd....P,ii2SdWOjak -u masocpuser -p masocpuserpass"
   echo
   exit 1
 }
@@ -45,16 +44,13 @@ if [[ $# -eq 0 ]]; then
   echoRed "No arguments provided with $0. Exiting..."
   usage
 else
-  while getopts 's:r:m:e:u:p:?h' c; do
+  while getopts 's:r:e:u:p:?h' c; do
     case $c in
     s)
       STACK_NAME=$OPTARG
       ;;
     r)
       REGION=$OPTARG
-      ;;
-    m)
-      MAS_CONFIG_DIR=$OPTARG
       ;;
     e)
       ER_KEY=$OPTARG
@@ -75,10 +71,9 @@ fi
 echoBlue "\n:: Script Inputs ::\n"
 echo "  Stack name = $STACK_NAME"
 echo "  Region = $REGION"
-echo "  MAS config directory = $MAS_CONFIG_DIR"
 echo "  Entitlement key = $ER_KEY"
-echo "  Openshift User = $OPENSHIFT_USER"
-echo "  Openshift Password = $OPENSHIFT_PASSWORD"
+echo "  OpenShift user = $OPENSHIFT_USER"
+echo "  OpenShift password = $OPENSHIFT_PASSWORD"
 echo -e "\n"
 
 # Check for supported region
@@ -100,14 +95,10 @@ if [[ (-z $STACK_NAME) ]]; then
   usage
 fi
 
-if [[ -z $MAS_CONFIG_DIR ]]; then
-  echo "Parameter 'mas-config-directory' is empty"
-  export MAS_CONFIG_DIR=/tmp/masconfigdir
-  echo "Creating a new directory $MAS_CONFIG_DIR"
-  mkdir -p $MAS_CONFIG_DIR  
-else
-  export MAS_CONFIG_DIR=$MAS_CONFIG_DIR
-fi
+# Creating and exporting MAS_CONFIG_DIR path 
+export MAS_CONFIG_DIR=/tmp/masconfigdir
+[ -d "$MAS_CONFIG_DIR" ] && rmdir $MAS_CONFIG_DIR
+mkdir -p $MAS_CONFIG_DIR  
 
 if [[ -z $ER_KEY ]]; then
   echoRed "ERROR: Parameter 'entitlement-key' is empty"
@@ -141,7 +132,7 @@ echo "  OpenShift Password    : $OC_PASSWORD"
 echo "  OpenShift API URL     : $OC_API"
 
 # Login to OCP cluster
-echo -e "\nTrying to log into OpenShift"
+echo -e "\nTrying to log into OpenShift\n"
 oc login -u ${OC_USER} -p ${OC_PASSWORD} --server=${OC_API}
 
 status=$(oc whoami 2>&1)
@@ -152,7 +143,7 @@ else
   echoGreen "\nOpenShift Login is successful."
 fi
 
-echoBlue "==== Execution started at `date` ===="  
+echoBlue "\n==== Execution started at `date` ===="  
 
 export GIT_REPO_HOME=$(pwd)
 export MAS_INSTANCE_ID="mas-${UNIQ_STR}"
@@ -188,23 +179,12 @@ echo
 echoBlue "====  CP4D deployment completed  ===="
 echo
 
-cat <<EOT > /tmp/configure-mas.yml
----
-- hosts: localhost
-  any_errors_fatal: true
-  vars:
-    mas_instance_id: "{{ lookup('env', 'MAS_INSTANCE_ID') }}"
-    mas_workspace_id: "{{ lookup('env', 'MAS_WORKSPACE_ID') }}"
-    mas_config_dir: "{{ lookup('env', 'MAS_CONFIG_DIR') }}"
-  roles:
-    - ${GIT_REPO_HOME}/ansible/playbooks/roles/suite_config
-EOT
-
 # Configure MAS to use CP4D
 echoBlue "==== MAS configuration started   ===="
 echo
-ansible-playbook /tmp/configure-mas.yml
+ansible-playbook configure-suite.yml
 echo
 echoBlue "==== MAS configuration completed ===="
 echo
-echoBlue "==== Execution completed at `date` ===="
+echoBlue "==== Execution completed at `date` ====\n"
+echo
