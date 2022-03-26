@@ -97,7 +97,7 @@ mark_provisioning_failed() {
   elif [[ $retcode -eq 13 ]]; then
     export STATUS_MSG="The provided Hosted zone is not a public hosted zone. Please provide a public hosted zone."
   elif [[ $retcode -eq 14 ]]; then
-    export STATUS_MSG="The provided JDBC details for MAS Manage are missing or invalid."
+    export STATUS_MSG="The JDBC details for MAS Manage are missing or invalid."
   elif [[ $retcode -eq 15 ]]; then
     export STATUS_MSG="Please provide all the inputs to use existing SLS."
   elif [[ $retcode -eq 16 ]]; then
