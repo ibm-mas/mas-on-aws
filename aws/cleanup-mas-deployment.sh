@@ -36,7 +36,7 @@ usage() {
   echo "  - If you want to cleanup the resources based on the unique string, then provide the 'unique-string' parameter."
   echo "    In this case, the associated CloudFormation stack won't be deleted even if it exists. It should be deleted explicitly."
   echo " "
-  echo "  If 'stack-name' is provided, 'unique-string' will be ignored."
+  echo "  Do not specify both 'stack-name' and 'unique-string' parameters at the same time."
   echo "  For example, "
   echo "   cleanup-mas-deployment.sh -s mas-stack-1 -r us-east-1"
   echo "   cleanup-mas-deployment.sh -u gf5thj -r us-east-1"
@@ -86,6 +86,12 @@ fi
 
 if [[ (-z $STACK_NAME) && (-z $UNIQUE_STR) ]]; then
   echo "ERROR: Both the parameters 'stack-name' and 'unique-string' are empty, one of these should have a value"
+  usage
+fi
+
+# If resource group is provided, do not specify unique string
+if [[ (-n $STACK_NAME) && (-n $UNIQUE_STR) ]]; then
+  echoRed "ERROR: Do not specify both 'stack-name' and 'unique-string'. If 'stack-name' is specified, do not specify 'unique-string'."
   usage
 fi
 
@@ -557,5 +563,7 @@ if [[ -n $STACK_NAME ]]; then
     echo "No CloudFormation stack for this MAS instance"
   fi
   echo "---------------------------------------------"
+else
+  echo "No 'stack-name' specified, you may need to delete the CloudFormation stack explicitly if exists, or run the script with -s 'stack-name' parameter"
 fi
 echo "==== Execution completed at `date` ===="

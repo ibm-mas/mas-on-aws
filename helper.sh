@@ -111,7 +111,7 @@ mark_provisioning_failed() {
   elif [[ $retcode -eq 21 ]]; then
     export STATUS_MSG="Failure in creating OCP cluster."
   elif [[ $retcode -eq 22 ]]; then
-    export STATUS_MSG="Failure in creating Basion host."
+    export STATUS_MSG="Failure in creating Bastion host."
   elif [[ $retcode -eq 23 ]]; then
     export STATUS_MSG="Failed in uploading deployment context to S3."
   elif [[ $retcode -eq 24 ]]; then
