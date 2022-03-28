@@ -36,52 +36,52 @@ else
    SCRIPT_STATUS=13
 fi
 
-# JDBC CFT inputs validation and  connection test
-if [[ (-z $MAS_JDBC_USER) && (-z $MAS_JDBC_PASSWORD) && (-z $MAS_JDBC_URL) && (-z $MAS_JDBC_CERT_URL) ]]
-then
-    log "=== No Database details provided ==="
-else
-    if [ -z "$MAS_JDBC_USER" ] 
-    then 
-        log "ERROR: Database username is not specified"
-        SCRIPT_STATUS=14
-    elif [ -z "$MAS_JDBC_PASSWORD" ] 
-    then 
-        log "ERROR: Database password is not specified"
-        SCRIPT_STATUS=14
-    elif [ -z "$MAS_JDBC_URL" ] 
+# JDBC CFT inputs validation and connection test
+if [[ $DEPLOY_MANAGE == "true" ]]; then
+    if [[ (-z $MAS_JDBC_USER) && (-z $MAS_JDBC_PASSWORD) && (-z $MAS_JDBC_URL) && (-z $MAS_JDBC_CERT_URL) ]]
     then
-        log "ERROR: Database connection url is not specified"
+        log "ERROR: Database details are not specified for MAS Manage deployment"
         SCRIPT_STATUS=14
-    elif [ -z "$MAS_JDBC_CERT_URL" ] 
-    then
-        log "ERROR: Database certificate url is not specified"
-        SCRIPT_STATUS=14
-    else         
-        log "Downloading DB certificate"
-        cd $GIT_REPO_HOME
-        if [[ ${MAS_JDBC_CERT_URL,,} =~ ^https? ]]; then
-        wget "$MAS_JDBC_CERT_URL" -O db.crt
-        log " MAS_JDBC_CERT_LOCAL_FILE=$MAS_JDBC_CERT_LOCAL_FILE"
-        elif [[ ${MAS_JDBC_CERT_URL,,} =~ ^s3 ]]; then
-        aws s3 cp "$MAS_JDBC_CERT_URL" db.crt
-        log " MAS_JDBC_CERT_LOCAL_FILE=$MAS_JDBC_CERT_LOCAL_FILE"
-        fi
-        export MAS_DB2_JAR_LOCAL_PATH=$GIT_REPO_HOME/lib/db2jcc4.jar
-        if  [[ $OFFERING_TYPE == "MAS Core + Manage (no Cloud Pak for Data)" ]]; then  
-        if [[ ${MAS_JDBC_URL,, } =~ ^jdbc:db2? ]]; then
-            log  "Connecting to the Database"
-            if python jdbc-prevalidate.py;  then 
-                log "JDBC URL Validation = PASS"
+    else
+        if [ -z "$MAS_JDBC_USER" ] 
+        then 
+            log "ERROR: Database username is not specified"
+            SCRIPT_STATUS=14
+        elif [ -z "$MAS_JDBC_PASSWORD" ] 
+        then 
+            log "ERROR: Database password is not specified"
+            SCRIPT_STATUS=14
+        elif [ -z "$MAS_JDBC_URL" ] 
+        then
+            log "ERROR: Database connection url is not specified"
+            SCRIPT_STATUS=14
+        elif [ -z "$MAS_JDBC_CERT_URL" ] 
+        then
+            log "ERROR: Database certificate url is not specified"
+            SCRIPT_STATUS=14
+        else         
+            log "Downloading DB certificate"
+            cd $GIT_REPO_HOME
+            if [[ ${MAS_JDBC_CERT_URL,,} =~ ^https? ]]; then
+                wget "$MAS_JDBC_CERT_URL" -O db.crt
+                log " MAS_JDBC_CERT_LOCAL_FILE=$MAS_JDBC_CERT_LOCAL_FILE"
+            elif [[ ${MAS_JDBC_CERT_URL,,} =~ ^s3 ]]; then
+                aws s3 cp "$MAS_JDBC_CERT_URL" db.crt
+                log " MAS_JDBC_CERT_LOCAL_FILE=$MAS_JDBC_CERT_LOCAL_FILE"
+            fi
+            export MAS_DB2_JAR_LOCAL_PATH=$GIT_REPO_HOME/lib/db2jcc4.jar
+            if [[ ${MAS_JDBC_URL,, } =~ ^jdbc:db2? ]]; then
+                log  "Connecting to the Database"
+                if python jdbc-prevalidate.py;  then 
+                    log "JDBC URL Validation = PASS"
+                else
+                    log "ERROR: JDBC URL Validation = FAIL"
+                    SCRIPT_STATUS=14
+                fi
             else
-                log "ERROR: JDBC URL Validation = FAIL"
-                SCRIPT_STATUS=4
-            fi
-        else
-            log "Skipping JDBC URL validation, supported only for DB2"     
+                log "Skipping JDBC URL validation, supported only for DB2"           
             fi
         fi
-       
     fi
 fi
 
